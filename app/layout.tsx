@@ -1,5 +1,7 @@
 import React, { ReactNode } from 'react'
+import Navbar from '@/components/Navbar';
 import '@/assets/styles/globals.css'
+import Footer from '@/components/Footer';
 
 interface MainLayoutProps {
     children: ReactNode;
@@ -11,11 +13,13 @@ export const metadata = {
     keywords: 'rental, find rentals, find properties',
 }
 
-const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
+const MainLayout = ({ children }: MainLayoutProps) => {
     return (
         <html lang='en'>
             <body>
-                <div>MainLayout</div>
+                <Navbar />
+                <main>{children}</main>
+                <Footer />
             </body>
         </html>
     )
