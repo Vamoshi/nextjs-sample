@@ -1,10 +1,10 @@
-import { PropertyDocument } from '@/models/Property'
+import { PropertyI } from '@/models/PropertyI'
 import React from 'react'
 import { FaMapMarker, FaTimes } from 'react-icons/fa'
 import { FaBath, FaBed, FaCheck, FaLocationDot, FaRulerCombined } from 'react-icons/fa6'
 
 type Props = {
-    property: PropertyDocument
+    property: PropertyI
 }
 
 const PropertyDetails = ({ property }: Props) => {
@@ -50,12 +50,14 @@ const PropertyDetails = ({ property }: Props) => {
                     </div>
                     <div className="flex items-center justify-center mb-4 pb-4 md:pb-0">
                         <div className="text-gray-500 mr-2 font-bold">Monthly</div>
-                        {
-                            property.rates?.monthly ?
-                                `$${property.rates?.monthly.toLocaleString()}`
-                                :
-                                <FaTimes className="text-red-700"></FaTimes>
-                        }
+                        <div className="text-2xl font-bold text-blue-500">
+                            {
+                                property.rates?.monthly ?
+                                    `$${property.rates?.monthly.toLocaleString()}`
+                                    :
+                                    <FaTimes className="text-red-700"></FaTimes>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
@@ -88,7 +90,7 @@ const PropertyDetails = ({ property }: Props) => {
 
                 <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 list-none space-y-2">
                     {
-                        property.amenities.map((amenity, i) =>
+                        property?.amenities && property.amenities.map((amenity, i) =>
                             <li key={i}>
                                 <FaCheck className="inline-block text-green-600 mr-2" /> {amenity}
                             </li>
@@ -98,7 +100,7 @@ const PropertyDetails = ({ property }: Props) => {
                 </ul>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-md mt-6">
-                <div id="map"></div>
+                <div id="map">Map Here</div>
             </div>
         </main>
     )

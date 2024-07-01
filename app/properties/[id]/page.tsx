@@ -1,7 +1,8 @@
 "use client"
 import PropertyDetails from '@/components/PropertyDetails'
 import PropertyHeaderImage from '@/components/PropertyHeaderImage'
-import { PropertyDocument } from '@/models/Property'
+import Spinner from '@/components/Spinner'
+import { PropertyI } from '@/models/PropertyI'
 import { fetchProperty } from '@/utils/requests'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
@@ -10,7 +11,7 @@ import { FaArrowLeft, FaBookmark, FaPaperPlane, FaShare } from 'react-icons/fa6'
 
 const PropertyPage = () => {
     const { id } = useParams()
-    const [property, setProperty] = useState<PropertyDocument | null>(null)
+    const [property, setProperty] = useState<PropertyI | null>(null)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
@@ -37,10 +38,11 @@ const PropertyPage = () => {
 
     return (
         <>
+            {loading && <Spinner loading={loading} />}
             {
                 !loading && property &&
                 <>
-                    <PropertyHeaderImage image={property.images[0]} />
+                    <PropertyHeaderImage image={property?.images && property.images[0] as string || ""} />
                     <section>
                         <div className="container m-auto py-6 px-6">
                             <Link
@@ -54,7 +56,6 @@ const PropertyPage = () => {
                     <section className="bg-blue-50">
                         <div className="container m-auto py-10 px-6">
                             <div className="grid grid-cols-1 md:grid-cols-70/30 w-full gap-6">
-
                                 <PropertyDetails property={property} />
                                 {/* <!-- Sidebar --> */}
                                 <aside className="space-y-4">

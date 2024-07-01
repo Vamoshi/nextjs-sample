@@ -1,17 +1,31 @@
 'use client'
 import Image from 'next/image'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import logo from "@/assets/images/logo.png"
 import profileDefault from "@/assets/images/profile.png"
 import logoWhite from "@/assets/images/logo-white.png"
 import Link from 'next/link'
 import { FaGoogle } from 'react-icons/fa'
 import { usePathname } from 'next/navigation'
+import { ClientSafeProvider, LiteralUnion, getProviders, signIn, signOut, useSession } from 'next-auth/react'
+import { BuiltInProviderType } from 'next-auth/providers/index'
+import Spinner from './Spinner'
 
 const Navbar = () => {
+    const { data: session } = useSession()
+    const [providers, setProviders] = useState<Record<LiteralUnion<BuiltInProviderType, string>, ClientSafeProvider> | null>(null)
+
+    useEffect(() => {
+        const setAuthProviders = async () => {
+            const res = await getProviders()
+            setProviders(res)
+        }
+
+        setAuthProviders()
+    }, [])
+
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<Boolean>(false)
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState<Boolean>(false)
-    const [isLoggedIn, setIsLoggedIn] = useState<Boolean>(false)
     const pathName = usePathname()
 
     return (
@@ -47,9 +61,7 @@ const Navbar = () => {
                         </button>
                     </div>
 
-                    <div
-                        className="flex flex-1 items-center justify-center md:items-stretch md:justify-start"
-                    >
+                    <div className="flex flex-1 items-center justify-center md:items-stretch md:justify-start">
                         {/* <!-- Logo --> */}
                         <Link className="flex flex-shrink-0 items-center" href="/">
                             <Image
@@ -77,7 +89,7 @@ const Navbar = () => {
                                     Properties
                                 </Link>
                                 {
-                                    isLoggedIn &&
+                                    session &&
                                     <Link
                                         href="/properties/add"
                                         className={`${pathName === "/properties/add" && "bg-black"} text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2`}
@@ -89,17 +101,11 @@ const Navbar = () => {
                         </div>
                     </div>
                     {
-                        isLoggedIn ?
-
+                        session ?
                             // <!-- Right Side Menu (Logged In) -->
-                            <div
-                                className="absolute inset-y-0 right-0 flex items-center pr-2 md:static md:inset-auto md:ml-6 md:pr-0"
-                            >
+                            <div className="absolute inset-y-0 right-0 flex items-center pr-2 md:static md:inset-auto md:ml-6 md:pr-0">
                                 <Link href="/messages" className="relative group">
-                                    <button
-                                        type="button"
-                                        className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                                    >
+                                    <button type="button" className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                                         <span className="absolute -inset-1.5"></span>
                                         <span className="sr-only">View notifications</span>
                                         <svg
@@ -139,8 +145,10 @@ const Navbar = () => {
                                             <span className="sr-only">Open user menu</span>
                                             <Image
                                                 className="h-8 w-8 rounded-full"
-                                                src={profileDefault}
+                                                src={session?.user?.image || profileDefault}
                                                 alt=""
+                                                height={40}
+                                                width={40}
                                             />
                                         </button>
                                     </div>
@@ -162,6 +170,7 @@ const Navbar = () => {
                                                 role="menuitem"
                                                 tabIndex={-1}
                                                 id="user-menu-item-0"
+                                                onClick={() => setIsProfileMenuOpen(false)}
                                             >
                                                 Your Profile
                                             </Link>
@@ -171,6 +180,7 @@ const Navbar = () => {
                                                 role="menuitem"
                                                 tabIndex={-1}
                                                 id="user-menu-item-2"
+                                                onClick={() => setIsProfileMenuOpen(false)}
                                             >
                                                 Saved Properties
                                             </Link>
@@ -179,6 +189,10 @@ const Navbar = () => {
                                                 role="menuitem"
                                                 tabIndex={-1}
                                                 id="user-menu-item-2"
+                                                onClick={() => {
+                                                    setIsProfileMenuOpen(false)
+                                                    signOut()
+                                                }}
                                             >
                                                 Sign Out
                                             </button>
@@ -190,12 +204,15 @@ const Navbar = () => {
                             // <!-- Right Side Menu (Logged Out) -->
                             <div className="hidden md:block md:ml-6">
                                 <div className="flex items-center">
-                                    <button
-                                        className="flex items-center text-white bg-gray-700 hover:bg-gray-900 hover:text-white rounded-md px-3 py-2"
-                                    >
-                                        <FaGoogle className="text-white mr-2" />
-                                        <span>Login or Register</span>
-                                    </button>
+                                    {
+                                        providers && Object.values(providers).map((provider, index) =>
+                                            <button onClick={() => signIn(provider.id)} key={index} className="flex items-center text-white bg-gray-700 hover:bg-gray-900 hover:text-white rounded-md px-3 py-2">
+                                                <FaGoogle className="text-white mr-2" />
+                                                <span>Login or Register</span>
+                                            </button>
+                                        ) ||
+                                        <Spinner loading={true} size={30} />
+                                    }
                                 </div>
                             </div>
                     }
@@ -220,7 +237,7 @@ const Navbar = () => {
                             Properties
                         </Link>
                         {
-                            isLoggedIn &&
+                            session &&
                             <Link
                                 href="/properties/add"
                                 className={`${pathName === '/properties/add' && "bg-black" || "hover:bg-gray-700"}  text-white block rounded-md px-3 py-2 text-base font-medium`}
@@ -229,12 +246,12 @@ const Navbar = () => {
                             </Link>
                         }
                         {
-                            !isLoggedIn &&
-                            <button
-                                className="flex items-center text-white bg-gray-700 hover:bg-gray-900 hover:text-white rounded-md px-3 py-2 my-4"
-                            >
-                                <span>Login or Register</span>
-                            </button>
+                            !session &&
+                            providers && Object.values(providers).map((provider, index) =>
+                                <button onClick={() => signIn(provider.id)} key={index} className="flex items-center text-white bg-gray-700 hover:bg-gray-900 hover:text-white rounded-md px-3 py-2">
+                                    <span>Login or Register</span>
+                                </button>
+                            )
                         }
                     </div>
                 </div>

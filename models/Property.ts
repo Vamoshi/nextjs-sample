@@ -1,11 +1,12 @@
-import mongoose, { Schema, model, models, Document } from "mongoose";
+import { Schema, model, models } from "mongoose";
+import { PropertyI } from "./PropertyI";
 
-const PropertySchema = new Schema(
+const PropertySchema = new Schema<PropertyI>(
   {
     owner: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: "true",
+      required: true,
     },
     name: {
       type: String,
@@ -76,11 +77,7 @@ const PropertySchema = new Schema(
   { timestamps: true }
 );
 
-type PropertyDocument = mongoose.InferSchemaType<typeof PropertySchema> &
-  Document & {
-    _id: mongoose.Types.ObjectId;
-  };
+const Property =
+  models?.Property || model<PropertyI>("Property", PropertySchema);
 
-const Property = models.Property || model("Property", PropertySchema);
 export default Property;
-export type { PropertyDocument };

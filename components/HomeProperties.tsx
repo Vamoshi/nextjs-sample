@@ -1,8 +1,8 @@
 import React from 'react'
 import PropertyCard from '@/components/PropertyCard'
 import Link from 'next/link'
-import { PropertyDocument } from '@/models/Property'
 import { fetchProperties } from '@/utils/requests'
+import { PropertyI } from '@/models/PropertyI'
 
 const HomeProperties = async () => {
     const properties = await fetchProperties()
@@ -23,7 +23,7 @@ const HomeProperties = async () => {
                             recentProperties.length === 0 ?
                                 <p>No Properties Found</p>
                                 :
-                                recentProperties.map((property: PropertyDocument) => <PropertyCard key={property._id.toString()} property={property} />)
+                                recentProperties.map((property: PropertyI) => <PropertyCard key={property._id.toString()} property={property} />)
                         }
                     </div>
                 </div>

@@ -7,7 +7,11 @@ async function fetchProperties() {
       return [];
     }
 
-    const res = await fetch(`${apiDomain}/properties`);
+    const res = await fetch(
+      `${apiDomain}/properties`,
+      // Sets it so that new changes are reflected
+      { cache: "no-store" }
+    );
     if (!res.ok) {
       throw new Error("Failed to fetch data");
     }

@@ -1,4 +1,4 @@
-import { PropertyDocument } from '@/models/Property'
+import { PropertyI } from '@/models/PropertyI'
 import Image from 'next/image'
 import Link from 'next/link'
 import React, { ReactNode } from 'react'
@@ -6,7 +6,7 @@ import { FaMapMarker } from 'react-icons/fa'
 import { FaBath, FaBed, FaMoneyBill, FaRuler, FaRulerCombined } from 'react-icons/fa6'
 
 interface PropertyCardProps {
-    property: PropertyDocument,
+    property: PropertyI,
 }
 
 const PropertyCard = ({ property }: PropertyCardProps) => {
@@ -29,7 +29,7 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
     return (
         <div className="rounded-xl shadow-md relative">
             <Image
-                src={`/images/properties/${property.images[0]}`}
+                src={`/images/properties/${property.images && property.images[0]}`}
                 alt=""
                 className='w-full h-auto rounded-t-xl'
                 height={0}
