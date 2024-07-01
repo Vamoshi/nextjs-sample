@@ -29,7 +29,7 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
     return (
         <div className="rounded-xl shadow-md relative">
             <Image
-                src={`/images/properties/${property.images && property.images[0]}`}
+                src={property.images ? property.images[0] as string : ""}
                 alt=""
                 className='w-full h-auto rounded-t-xl'
                 height={0}
